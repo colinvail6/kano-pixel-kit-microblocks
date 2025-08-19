@@ -1,0 +1,97 @@
+module 'PixelKit v1'
+author unknown
+version 1 0 
+description ''
+variables width height button_aValue 
+
+  spec 'r' 'get index from coordinate' 'get index from coordinate x _ y _' 'auto auto' 0 0
+  spec ' ' 'set pixel x' 'set pixel x _ y _ to color _' 'auto auto color' 0 0
+  spec ' ' 'setup NeoMatrix width' 'setup Pixel Kit with width _ height _ pin _' 'auto auto auto' 16 8 4
+  spec ' ' 'clear NeoMatrix' 'clear Pixel Kit'
+  spec ' ' 'draw rectangle x' 'draw rectangle x _ y _ width _ height _ color _' 'auto auto auto auto color' 2 3 5 3
+  spec 'r' 'read Joystick event' 'read Joystick event _' 'auto' 'Up, Down, Left, or Right'
+  spec 'r' 'read value from button' 'read value from button _' 'auto' 'A, B, or Reset'
+  spec 'r' 'read value from dial' 'read value from dial'
+  spec 'r' 'read value from microphone' 'read value from microphone'
+  spec ' ' 'set background color to' 'set background color to _' 'color'
+  spec 'r' 'color r' 'color r _ g _ b _' 'auto auto auto' 0 0 0
+  spec 'r' 'random2 color range' 'random color range _' 'auto' 255
+  spec ' ' 'set brightness to' 'set brightness to _' 'auto' 10
+
+to 'clear NeoMatrix' {
+  clearNeoPixels
+}
+
+to 'color r' red green green {
+  return (colorFromRGB red green green)
+}
+
+to 'draw rectangle x' x y w h color {
+  for i ('[data:range]' 0 w) {
+    for j ('[data:range]' 0 h) {
+      'set pixel x' (x + i) (y + j) color
+    }
+  }
+}
+
+to 'get index from coordinate' x y {
+  return (((y * width) + x) + 1)
+}
+
+to 'random2 color range' range {
+  return ('color r' (random 0 range) (random 0 range) (random 0 range))
+}
+
+to 'read Joystick event' eventName {
+  if (eventName == 'Up') {
+    return (digitalReadOp 35)
+  } (eventName == 'Down') {
+    return (digitalReadOp 34)
+  } (eventName == 'Left') {
+    return (digitalReadOp 26)
+  } (eventName == 'Right') {
+    return (digitalReadOp 25)
+  } (eventName == 'Click') {
+    return (digitalReadOp 27)
+  } else {
+    return 'Event not found'
+  }
+}
+
+to 'read value from button' buttonName {
+  if (buttonName == 'A') {
+    return (digitalReadOp 23)
+  } (buttonName == 'B') {
+    return (digitalReadOp 18)
+  } (buttonName == 'Reset') {
+    return (digitalReadOp 5)
+  } else {
+    return 'The button name does not match any button instances on the Pixel Kit'
+  }
+}
+
+to 'read value from dial' {
+  return (analogReadOp 36)
+}
+
+to 'read value from microphone' {
+  return (analogReadOp 39)
+}
+
+to 'set background color to' color {
+  neoPixelSetAllToColor color
+}
+
+to 'set brightness to' brightness {
+}
+
+to 'set pixel x' x y color {
+  setNeoPixelColor ('get index from coordinate' x y) color
+}
+
+to 'setup NeoMatrix width' w h pin {
+  width = w
+  height = h
+  neoPixelAttach (w * h) pin
+}
+
